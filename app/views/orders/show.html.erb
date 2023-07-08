@@ -28,7 +28,7 @@
           <% @line_items.each do |item| %>
             <% order_total += item.quantity * item.product.price %>
           <% end %>
-          <%= order_total %>
+          <%= humanized_money_with_symbol order_total %>
           </th>
         </tr>
       </tfoot>
