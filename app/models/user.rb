@@ -1,17 +1,14 @@
 class User < ApplicationRecord
   has_secure_password
+  
+validates :email, presence: true, uniqueness: { case_sensitive: false }
+validates :first_name, presence: true
+validates :last_name, presence: true
+validates :password, presence: true, length: {minimum: 6} 
+validates :password_confirmation, presence: true, length: {minimum: 6} 
 
-  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-
-validates :email, presence: true,
-
-    uniqueness: { case_sensitive: false },
-
-    length: { maximum: 105 },
-
-    format: { with: VALID_EMAIL_REGEX }
-
-  validates :first_name, presence: true
-  validates :last_name, presence: true
-  validates :password_digest, presence: true
+  def authenticate_with_credentials(email, password) 
+    return nil if email != self.email || self.password != password  
+    self
+  end
 end
