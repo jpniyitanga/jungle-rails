@@ -56,18 +56,34 @@ RSpec.describe User, type: :model do
       @user6 = User.new(email: "user6@email.com", password: "123456", password_confirmation: "123456", first_name: "fname_6", last_name: "lname_6")
       @user6.save 
       expect(@user6.errors.full_messages).to include("Email has already been taken") 
-    end
+    end  
+  end
+
+  describe ".authenticate_with_credentials" do 
 
     it "should return null if not authenticated" do       
-      user = User.new(email: "user6@email.com", password: "123456", password_confirmation: "123456", first_name: "fname_6", last_name: "lname_6") 
-      expect(user.authenticate_with_credentials("test@email.com", "123456")).to be_nil 
+      @user = User.create(email: "user6@email.com", password: "123456", password_confirmation: "123456", first_name: "fname_6", last_name: "lname_6") 
+      @session = User.authenticate_with_credentials("test@email.com", "123456")
+      expect(@session).to be_nil 
     end 
 
     it "should return user if authenticated" do       
-      user = User.new(email: "user6@email.com", password: "123456", password_confirmation: "123456", first_name: "fname_6", last_name: "lname_6") 
-      expect(user.authenticate_with_credentials("user6@email.com", "123456")).not_to be_nil 
+      @user = User.create(email: "user6@email.com", password: "123456", password_confirmation: "123456", first_name: "fname_6", last_name: "lname_6") 
+      @session = User.authenticate_with_credentials("user6@email.com", "123456")
+      expect(@session).to eql(@user)
     end
 
+    it "should return user even if there are spaces before and/or after email address" do       
+      @user = User.create(email: "user6@email.com", password: "123456", password_confirmation: "123456", first_name: "fname_6", last_name: "lname_6") 
+      @session = User.authenticate_with_credentials(" user6@email.com ", "123456")
+      expect(@session).to eq(@user)
+    end
 
-  end
+    it "should return user even if email address is in wrong case" do       
+      @user = User.create(email: "user6@email.com", password: "123456", password_confirmation: "123456", first_name: "fname_6", last_name: "lname_6") 
+      @session = User.authenticate_with_credentials("UsEr6@emaiL.coM ", "123456")
+      expect(@session).to eql(@user)
+    end
+
+  end 
 end

@@ -7,8 +7,8 @@ validates :last_name, presence: true
 validates :password, presence: true, length: {minimum: 6} 
 validates :password_confirmation, presence: true, length: {minimum: 6} 
 
-  def authenticate_with_credentials(email, password) 
-    return nil if email != self.email || self.password != password  
-    self
+  def self.authenticate_with_credentials(email, password) 
+    # require "pry"; binding.pry
+    @user = self.where("lower(email) = ?", email.delete(" ").downcase).first.try(:authenticate, password)   
   end
 end
